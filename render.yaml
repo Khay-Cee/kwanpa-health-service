@@ -10,5 +10,5 @@ services:
     envVars:
       - key: MODEL_PATH
         value: model_trained_101class.keras
-    plan: starter
+      plan: free
     region: oregon
