@@ -5,10 +5,10 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       curl -L "https://drive.google.com/uc?export=download&id=1FCv3UeEIfw4Qs_A9U74YjbT85XeNrUyr" -o model_trained_101class.keras
-    startCommand: uvicorn app:app --host=0.0.0.0 --port=10000
+    startCommand: uvicorn app:app --host=0.0.0.0 --port=$PORT
     autoDeploy: true
     envVars:
       - key: MODEL_PATH
         value: model_trained_101class.keras
-      plan: free
+    plan: free
     region: oregon
