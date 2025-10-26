@@ -60,6 +60,7 @@ def get_macros(label):
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
+    download_model_if_missing()
     image = Image.open(io.BytesIO(await file.read())).resize((299, 299))
     img_array = np.expand_dims(np.array(image) / 255.0, axis=0)
     preds = model.predict(img_array)
