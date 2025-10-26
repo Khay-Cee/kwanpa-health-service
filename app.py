@@ -5,6 +5,8 @@ from tensorflow import keras
 import numpy as np
 from PIL import Image
 import io
+import os
+import requests
 
 app = FastAPI()
 
@@ -16,7 +18,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = keras.models.load_model("model_trained_101class.keras")
+
+MODEL_PATH = "model_trained_101class.keras"
+MODEL_URL = "https://drive.google.com/uc?export=download&id=1FCv3UeEIfw4Qs_A9U74YjbT85XeNrUyr"
+
+def download_model_if_missing():
+    if not os.path.exists(MODEL_PATH):
+        print(f"Model file not found. Downloading from {MODEL_URL}...")
+        response = requests.get(MODEL_URL, allow_redirects=True)
+        if response.status_code == 200:
+            with open(MODEL_PATH, "wb") as f:
+                f.write(response.content)
+            print("Model downloaded successfully.")
+        else:
+            raise RuntimeError(f"Failed to download model file. Status code: {response.status_code}")
+
+download_model_if_missing()
+model = keras.models.load_model(MODEL_PATH)
 
 labels = [
     "apple_pie", "baby_back_ribs", "baklava", "beef_carpaccio", "beef_tartare", "beet_salad", "beignets", "bibimbap", "bread_pudding", "breakfast_burrito",
