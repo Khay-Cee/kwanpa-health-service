@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import io
 import os
-import requests
+import subprocess
 
 app = FastAPI()
 
@@ -25,14 +25,16 @@ MODEL_URL = "https://drive.google.com/uc?export=download&id=1FCv3UeEIfw4Qs_A9U74
 
 def download_model_if_missing():
     if not os.path.exists(MODEL_PATH):
-        print(f"Model file not found. Downloading from {MODEL_URL}...")
-        response = requests.get(MODEL_URL, allow_redirects=True)
-        if response.status_code == 200:
-            with open(MODEL_PATH, "wb") as f:
-                f.write(response.content)
+        print(f"Model file not found. Downloading from Google Drive using gdown...")
+        try:
+            subprocess.run([
+                "python", "-m", "gdown",
+                f"https://drive.google.com/uc?id=1FCv3UeEIfw4Qs_A9U74YjbT85XeNrUyr",
+                "-O", MODEL_PATH
+            ], check=True)
             print("Model downloaded successfully.")
-        else:
-            raise RuntimeError(f"Failed to download model file. Status code: {response.status_code}")
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Failed to download model file with gdown. Error: {e}")
 
 
 
@@ -69,6 +71,3 @@ async def predict(file: UploadFile = File(...)):
     preds = model.predict(img_array)
     label = labels[np.argmax(preds[0])]
     return get_macros(label)
-
-    download_model_if_missing()
-    model = keras.models.load_model(MODEL_PATH)
