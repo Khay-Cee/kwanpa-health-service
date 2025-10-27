@@ -2,6 +2,8 @@
 
 This folder contains the minimal files needed to deploy your FastAPI calorie tracker model to Render.
 
+uvicorn app:app --reload
+
 ## Files
 - `app.py`: FastAPI app with model loading and prediction endpoint
 - `requirements.txt`: Python dependencies
