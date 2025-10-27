@@ -69,5 +69,16 @@ async def predict(file: UploadFile = File(...)):
     image = Image.open(io.BytesIO(await file.read())).resize((299, 299))
     img_array = np.expand_dims(np.array(image) / 255.0, axis=0)
     preds = model.predict(img_array)
-    label = labels[np.argmax(preds[0])]
-    return get_macros(label)
+    print(f"Model inference response: {preds}")
+    # Get top 5 predictions
+    top_indices = np.argsort(preds[0])[::-1][:5]
+    print("Top 5 predictions:")
+    for i in top_indices:
+        print(f"{labels[i]}: {preds[0][i]:.4f}")
+    label = labels[top_indices[0]]
+    probability = float(preds[0][top_indices[0]])
+    # For demonstration, return probability as 'calories'. Replace with real calorie prediction if available.
+    return {
+        "food": label,
+        "calories": probability
+    }

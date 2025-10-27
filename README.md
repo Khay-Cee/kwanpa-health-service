@@ -4,6 +4,11 @@ This folder contains the minimal files needed to deploy your FastAPI calorie tra
 
 uvicorn app:app --reload
 
+curl -X POST "http://localhost:8000/predict" \
+  -H "accept: application/json" \
+  -F "file=@apple.webp"
+
+  
 ## Files
 - `app.py`: FastAPI app with model loading and prediction endpoint
 - `requirements.txt`: Python dependencies
