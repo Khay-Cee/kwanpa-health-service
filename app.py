@@ -22,6 +22,7 @@ app.add_middleware(
 MODEL_PATH = "model_trained_101class.keras"
 MODEL_URL = "https://drive.google.com/uc?export=download&id=1FCv3UeEIfw4Qs_A9U74YjbT85XeNrUyr"
 
+
 def download_model_if_missing():
     if not os.path.exists(MODEL_PATH):
         print(f"Model file not found. Downloading from {MODEL_URL}...")
@@ -33,8 +34,8 @@ def download_model_if_missing():
         else:
             raise RuntimeError(f"Failed to download model file. Status code: {response.status_code}")
 
-download_model_if_missing()
-model = keras.models.load_model(MODEL_PATH)
+
+
 
 labels = [
     "apple_pie", "baby_back_ribs", "baklava", "beef_carpaccio", "beef_tartare", "beet_salad", "beignets", "bibimbap", "bread_pudding", "breakfast_burrito",
@@ -58,11 +59,16 @@ def get_macros(label):
         "fat_kcal": 80
     }
 
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     download_model_if_missing()
+    model = keras.models.load_model(MODEL_PATH)
     image = Image.open(io.BytesIO(await file.read())).resize((299, 299))
     img_array = np.expand_dims(np.array(image) / 255.0, axis=0)
     preds = model.predict(img_array)
     label = labels[np.argmax(preds[0])]
     return get_macros(label)
+
+    download_model_if_missing()
+    model = keras.models.load_model(MODEL_PATH)
